@@ -1,0 +1,62 @@
+services:
+  app:
+    container_name: app
+    build: 
+      context: .
+      dockerfile: Dockerfile
+
+    volumes:
+      - ../..:/workspaces:cached
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
+    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
+    network_mode: service:db
+
+    # Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    # user: root
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+  webapi:
+    image: ghcr.io/vpetkovic/demo-vp-weatherapi:latest
+    restart: unless-stopped
+    container_name: vp-weatherapi
+    ports:
+      - 5214:8080
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__WeatherApiDatabase: "Server=db;Database=WeatherDb;User=sa;Password=P@ssw0rd123!;TrustServerCertificate=True;MultipleActiveResultSets=True"
+    depends_on:
+      - db
+
+  cache:
+    image: redis:alpine
+    restart: unless-stopped
+    container_name: redis
+    ports:
+      - 6379:6379
+    depends_on:
+      - app
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    container_name: mssql
+    environment:
+      SA_PASSWORD: P@ssw0rd123!
+      MSSQL_AGENT_ENABLED: True
+      ACCEPT_EULA: Y
+      MSSQL_PID: Developer
+      MSSQL_TCP_PORT: 1433
+    healthcheck:
+      test: ["CMD-SHELL", "sqlcmd -S localhost -U sa -P P@ssw0rd123! -Q 'SELECT 1'"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+
+    # Add "forwardPorts": ["db:1433"] to **devcontainer.json** to forward MSSQL locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)

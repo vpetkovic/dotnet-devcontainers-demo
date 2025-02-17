@@ -1,0 +1,108 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet-mssql
+{
+	"name": ".NET (C#), Node.js (TypeScript) and MS SQL",
+	// Comment out the next 2 lines if you will use the built-in .NET image.
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	// Un/comment to use built-in .NET image.
+	//"image": "mcr.microsoft.com/dotnet/sdk:8.0", 
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+	"features": {
+		"ghcr.io/devcontainers/features/dotnet:2": {
+			"version": "none", // This is controlled through ENV variables but also can be updated here to use a different version of the .NET SDK.
+            "dotnetRuntimeVersions": "8.0",
+            "aspNetCoreRuntimeVersions": "8.0"
+		},
+		// dotnet-aspire is a .NET Core container with additional tools
+		"ghcr.io/nikiforovall/devcontainer-features/dotnet-aspire:1": {},
+		"ghcr.io/azure/azure-dev/azd:0": {
+            "version": "latest"
+        },
+		"ghcr.io/devcontainers/features/powershell:1": {
+            "version": "latest"
+        },
+		"ghcr.io/devcontainers/features/common-utils:2": {},
+		// GitHub CLI is a command-line tool that makes it easy to work with GitHub from your terminal
+		"ghcr.io/devcontainers/features/github-cli:1": {
+            "version": "2"
+        },
+		// k9s is a Kubernetes CLI to manage your clusters in real-time
+		"ghcr.io/audacioustux/devcontainers/k9s:1": {},
+		// nested containers
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest"
+        }
+	},
+
+	"customizations": {
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": { 
+				"mssql.connections": [
+					{
+						"server": "localhost,1433",
+						"database": "",
+						"authenticationType": "SqlLogin",
+						"user": "sa",
+						"password": "P@ssw0rd123!",
+						"emptyPasswordInput": false,
+						"savePassword": true,
+						"profileName": "mssql-container"
+					}
+				]
+			},
+			
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-vscode.vscode-node-azure-pack",
+				"GitHub.copilot",
+                "GitHub.vscode-github-actions",
+				"ms-dotnettools.vscode-dotnet-runtime",
+				"ms-dotnettools.csharp",
+				"ms-dotnettools.csdevkit",
+				"ms-azuretools.vscode-docker",
+				"GitHub.vscode-pull-request-github",
+				"ms-mssql.mssql",
+				"jmrog.vscode-nuget-package-manager"
+			]
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [
+	// 	"db:1433", 
+	// 	7168, 
+	// 	5156
+	// ],
+	// "portsAttributes": {
+	// 	"7168": {
+	// 		"label": "API (HTTPS)",
+	// 		"protocol": "https",
+	// 		"onAutoForward": "notify"
+	// 	},
+	// 	"5156": {
+	// 		"label": "API (HTTP)",
+	// 		"protocol": "http",
+	// 		"onAutoForward": "notify"
+	// 	}
+	// },
+
+	// postCreateCommand.sh parameters: $1=SA password, $2=dacpac path, $3=sql script(s) path
+	"postCreateCommand": "bash .devcontainer/microservices/mssql/postCreateCommand.sh 'P@ssw0rd123!' './bin/Debug/' './.devcontainer/microservices/mssql/' && bash .devcontainer/postCreateFinalize.sh && cd ./src/SampleApp && dotnet restore",
+	
+	"remoteEnv": {
+    	"PODMAN_USERNS": "keep-id",
+		"ASPNETCORE_Kestrel__Certificates__Default__Password":"password",
+        "ASPNETCORE_Kestrel__Certificates__Default__Path":"/https/aspnetapp.pfx",
+		"DOTNET_NO_PACKAGE_FALLBACK": "true",
+		"DOTNET_MULTILEVEL_LOOKUP": "0",
+        "TARGET": "net8.0"
+	},
+	// Set container user and group ID. Update if you want to run as a non-root user in the container. See https://aka.ms/vscode-remote/containers/non-root.
+	"containerUser": "vscode",
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "root"
+}
