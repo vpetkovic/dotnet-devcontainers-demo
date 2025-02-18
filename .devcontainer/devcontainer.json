@@ -65,7 +65,8 @@
 				"ms-azuretools.vscode-docker",
 				"GitHub.vscode-pull-request-github",
 				"ms-mssql.mssql",
-				"jmrog.vscode-nuget-package-manager"
+				"jmrog.vscode-nuget-package-manager",
+				"redis.redis-for-vscode"
 			]
 		}
 	},

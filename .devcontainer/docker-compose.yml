@@ -32,6 +32,7 @@ services:
     depends_on:
       - db
 
+  # Comment the following to run a Redis continaer within docker container using `docker run --name cache -p 6379:6379 -d redis`.
   cache:
     image: redis:alpine
     restart: unless-stopped

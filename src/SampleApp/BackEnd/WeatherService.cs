@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using Common;
 using StackExchange.Redis;
 
 namespace BackEnd;
@@ -15,11 +16,10 @@ public class WeatherService(
 
     public async Task<WeatherResponse?> GetWeatherAsync(string city)
     {
-        logger.LogInformation("Getting weather for {City} from web api", city); // not actually getting weather for the city but just random weather data
-        var source = "weather-api"; 
+        logger.LogInformation("Getting weather for {City} from web api", city); // not actually getting weather for the city but just random weather data 
         
         var cache = redis.GetDatabase();
-        var cacheKey = "city";
+        var cacheKey = city;
         var forecast = Array.Empty<WeatherForecast>();
         if (cache.KeyExists(cacheKey))
         {
@@ -50,19 +50,4 @@ public class WeatherService(
             };
         }
     }
-}
-
-public class WeatherResponse 
-{
-    public WeatherForecast[]? WeatherForecasts { get; set; }
-    public string? Message { get; set; }
-}
-
-public class WeatherForecast
-{
-    public int Id { get; set; }
-    public DateOnly Date { get; set; }
-    public int TemperatureC { get; set; }
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    public string? Summary { get; set; }
 }
