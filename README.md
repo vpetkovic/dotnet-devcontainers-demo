@@ -1,8 +1,7 @@
 Testing remote development with dev containers
 
 ## Introduction
-
-This repository demonstrates the use of development containers for .NET projects. Development containers provide a consistent and isolated development environment, making it easier to develop, build, and test applications.
+This repository is a template for demonstrating the use of development containers for .NET projects. Development containers provide a consistent and isolated development environment, making it easier to develop, build, and test applications. You can use this template as a starting point for your own .NET projects.
 
 ## Repository Structure
 
