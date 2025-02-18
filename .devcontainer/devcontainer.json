@@ -71,7 +71,7 @@
 		}
 	},
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// Ports are autoforwarded but if needed to be explicit uncomment below commented lines.
 	// "forwardPorts": [
 	// 	"db:1433", 
 	// 	7168, 
@@ -93,6 +93,10 @@
 	// postCreateCommand.sh parameters: $1=SA password, $2=dacpac path, $3=sql script(s) path
 	"postCreateCommand": "bash .devcontainer/microservices/mssql/postCreateCommand.sh 'P@ssw0rd123!' './bin/Debug/' './.devcontainer/microservices/mssql/' && bash .devcontainer/postCreateFinalize.sh && cd ./src/SampleApp && dotnet restore",
 	
+	"hostRequirements": {
+        "memory": "8gb",
+        "cpus": 4
+    },
 	"remoteEnv": {
     	"PODMAN_USERNS": "keep-id",
 		"ASPNETCORE_Kestrel__Certificates__Default__Password":"password",
