@@ -5,16 +5,21 @@ using StackExchange.Redis;
 
 namespace BackEnd;
 
+public interface IWeatherService
+{
+    Task<WeatherResponse?> GetWeatherAsync(string city);
+}
+
 public class WeatherService(
     HttpClient httpClient,
     IConnectionMultiplexer redis,
-    ILogger<WeatherService> logger)
+    ILogger<WeatherService> logger) : IWeatherService
 {
     private readonly HttpClient _httpClient = httpClient;
     private readonly IConnectionMultiplexer redis = redis;
     private readonly ILogger<WeatherService> logger = logger;
 
-    public async Task<WeatherResponse?> GetWeatherAsync(string city)
+    public virtual async Task<WeatherResponse?> GetWeatherAsync(string city)
     {
         logger.LogInformation("Getting weather for {City} from web api", city); // not actually getting weather for the city but just random weather data 
         

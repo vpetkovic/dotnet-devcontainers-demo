@@ -4,7 +4,7 @@ using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpClient<WeatherService>(client =>
+builder.Services.AddHttpClient<IWeatherService, WeatherService>(client =>
 {
     var weatherApi = builder.Configuration["WeatherApi:Url"] ?? throw new ArgumentNullException("WeatherApi:Url is not configured");
     client.BaseAddress = new Uri(weatherApi);
@@ -33,7 +33,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/weather/{city}", async (
     string city, 
-    WeatherService weatherService) =>
+    IWeatherService weatherService) =>
 {
     var result = await weatherService.GetWeatherAsync(city);
     return result is not null ? Results.Ok(result) : Results.NotFound("Weather data not available.");
