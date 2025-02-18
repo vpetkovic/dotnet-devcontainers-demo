@@ -72,11 +72,9 @@
 	},
 
 	// Ports are autoforwarded but if needed to be explicit uncomment below commented lines.
-	// "forwardPorts": [
-	// 	"db:1433", 
-	// 	7168, 
-	// 	5156
-	// ],
+	"forwardPorts": [
+		"db:1433"
+	],
 	// "portsAttributes": {
 	// 	"7168": {
 	// 		"label": "API (HTTPS)",
