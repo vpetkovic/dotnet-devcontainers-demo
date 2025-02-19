@@ -1,0 +1,75 @@
+schemaVersion: 2.2.0
+metadata:
+  name: dotnet-devspace
+  version: 1.0.0
+  description: "Development Space for .NET with MSSQL, Redis, and Weather API"
+
+components:
+  - name: devspace
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:8.0
+      sourceMapping: /projects
+      # memoryLimit: 4Gi
+      # cpuLimit: "2"
+      mountSources: true
+      command: ["sleep", "infinity"]
+      env:
+        - name: DOTNET_NO_PACKAGE_FALLBACK
+          value: "true"
+        - name: DOTNET_MULTILEVEL_LOOKUP
+          value: "0"
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+        - name: DOTNET_ROOT
+          value: "/projects/.dotnet"
+        - name: DOTNET_CLI_HOME
+          value: "/projects/.dotnet"
+        - name: NUGET_PACKAGES
+          value: "/projects/.nuget"
+      endpoints:
+        - name: backend-dev
+          targetPort: 5000
+
+  # - name: mssql
+  #   container:
+  #     image: mcr.microsoft.com/mssql/server:2022-latest
+  #     memoryLimit: 2Gi
+  #     cpuLimit: "1"
+  #     env:
+  #       - name: ACCEPT_EULA
+  #         value: "Y"
+  #       - name: SA_PASSWORD
+  #         value: "P@ssw0rd123!"
+  #       - name: MSSQL_AGENT_ENABLED
+  #         value: "True"
+  #     endpoints:
+  #       - name: db
+  #         targetPort: 1433
+
+  - name: redis
+    container:
+      image: redis:alpine
+      memoryLimit: 512Mi
+      cpuLimit: "0.5"
+      endpoints:
+        - name: redis
+          targetPort: 6379
+
+  - name: weatherapi
+    container:
+      image: ghcr.io/vpetkovic/demo-vp-weatherapi:latest
+      memoryLimit: 512Mi
+      cpuLimit: "0.5"
+      env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+      endpoints:
+        - name: weather-api
+          targetPort: 8080
+
+commands:
+  - id: setup-devspace
+    exec:
+      component: devspace
+      commandLine: "dotnet --info"
+      workingDir: /projects
