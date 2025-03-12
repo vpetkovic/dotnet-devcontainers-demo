@@ -8,6 +8,8 @@
     // Un/comment to use built-in .NET image.
     //"image": "mcr.microsoft.com/dotnet/sdk:8.0", 
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "capAdd": ["SYS_PTRACE"], // This avoids the need to run the entire development environment with root privileges, reducing risk and enhancing security.
+    "init": true, // It acts as the parent process for all the commands executed and files run in the container
 
     "features": {
         "ghcr.io/devcontainers/features/dotnet:2": {
@@ -23,7 +25,9 @@
         "ghcr.io/devcontainers/features/powershell:1": {
             "version": "latest"
         },
-        "ghcr.io/devcontainers/features/common-utils:2": {},
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "install": ["logrotate"]
+        },
         // GitHub CLI is a command-line tool that makes it easy to work with GitHub from your terminal
         "ghcr.io/devcontainers/features/github-cli:1": {
             "version": "2"
@@ -34,9 +38,15 @@
         "ghcr.io/devcontainers/features/docker-in-docker:2": {
             "version": "latest"
         }
+        
     },
 
     "customizations": {
+        "jetbrains" : {
+            "backend": "Rider", 
+            "version": "2024.3",
+            "plugins": []
+        },
         "vscode": {
             // Set *default* container specific settings.json values on container create.
             "settings": { 
@@ -88,17 +98,28 @@
     //  }
     // },
 
-    // postCreateCommand.sh parameters: $1=SA password, $2=dacpac path, $3=sql script(s) path
-    "postCreateCommand": "bash .devcontainer/microservices/mssql/postCreateCommand.sh 'P@ssw0rd123!' './bin/Debug/' './.devcontainer/microservices/mssql/' && bash .devcontainer/postCreateFinalize.sh && cd ./src/SampleApp && dotnet restore",
-    
-    "hostRequirements": {
-        "memory": "8gb",
-        "cpus": 4
+    "mounts": [
+        {
+            "type": "volume",
+            "source": "x509stores",
+            "target": "/home/vscode/.dotnet/corefx/cryptography/x509stores"
+        }
+    ],
+    "onCreateCommand": {
+        "developmentCerts" : "bash .devcontainer/setup-dotnet-dev-cert.sh",
+        "installAspireTemplates" : "dotnet new install Aspire.ProjectTemplates::9.1.0 --force"
     },
+    // postCreateCommand.sh parameters: $1=SA password, $2=dacpac path, $3=sql script(s) path
+    "postCreateCommand": {
+        "condigureMsSql" : "bash .devcontainer/microservices/mssql/postCreateCommand.sh 'P@ssw0rd123!' './bin/Debug/' './.devcontainer/microservices/mssql/'",
+        "finalize" : "bash .devcontainer/postCreateFinalize.sh && cd ./src/SampleApp && dotnet restore"
+    },
+    // This is not supported by Rider but it is supported by VS Code 
+    // "hostRequirements": {
+    //     "memory": "8gb",
+    //     "cpus": 4
+    // },
     "remoteEnv": {
-        "PODMAN_USERNS": "keep-id",
-        "ASPNETCORE_Kestrel__Certificates__Default__Password": "password",
-        "ASPNETCORE_Kestrel__Certificates__Default__Path": "/https/aspnetapp.pfx",
         "DOTNET_NO_PACKAGE_FALLBACK": "true",
         "DOTNET_MULTILEVEL_LOOKUP": "0",
         "TARGET": "net8.0"
@@ -107,5 +128,5 @@
     "containerUser": "vscode",
 
     // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-    "remoteUser": "root"
+    "remoteUser": "vscode"
 }

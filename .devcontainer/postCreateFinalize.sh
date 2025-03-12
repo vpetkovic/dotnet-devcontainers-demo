@@ -2,11 +2,8 @@
 # chmod -R 777 ./workspaces
 
 # Setting up the .NET Core CLI tools
-#dotnet workload update
+sudo dotnet workload update
 
-
-# Setting up certificates
-mkdir -p /https
-chmod 700 /https
-dotnet dev-certs https -ep /https/aspnetapp.pfx -p password
-dotnet dev-certs https --trust
+# List installed .NET tools && certificates
+dotnet tool list --global
+ls -l /home/vscode/.dotnet/corefx/cryptography/x509stores

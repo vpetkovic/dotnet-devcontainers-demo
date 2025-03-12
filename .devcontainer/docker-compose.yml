@@ -19,15 +19,21 @@ services:
     network_mode: service:db
 
     # Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-    # user: root
+    user: vscode
+    privileged: false  # Prevents excessive permissions
 
+    # Restrict Capabilities & Seccomp to further restrict the container's capabilities.
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:false
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   webapi:
     image: ghcr.io/vpetkovic/demo-vp-weatherapi:latest
     restart: unless-stopped
-    container_name: vp-weatherapi
+    container_name: vp-weatherapi-devcontainer
     ports:
       - 5214:8080
     environment:
@@ -42,7 +48,7 @@ services:
   cache:
     image: redis:alpine
     restart: unless-stopped
-    container_name: redis
+    container_name: redis-devcontainer
     ports:
       - 6379:6379
     depends_on:
@@ -53,7 +59,7 @@ services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     restart: unless-stopped
-    container_name: mssql
+    container_name: mssql-devcontainer
     environment:
       SA_PASSWORD: P@ssw0rd123!
       MSSQL_AGENT_ENABLED: True
