@@ -1,0 +1,41 @@
+networks:
+  app_network: 
+    driver: bridge
+
+services:
+  app:
+    container_name: app
+    image: mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm
+
+    volumes:
+      - ../..:/workspaces:cached
+
+    depends_on:
+      cache:
+        condition: service_healthy
+  webapi:
+    image: ghcr.io/vpetkovic/demo-vp-weatherapi:latest
+    restart: unless-stopped
+    container_name: vp-weatherapi-devcontainer
+    ports:
+      - 5214:8080
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - app_network
+
+  # Comment the following to run a Redis continaer within docker container using `docker run --name cache -p 6379:6379 -d redis`.
+  cache:
+    image: redis:alpine
+    restart: unless-stopped
+    container_name: redis-devcontainer
+    ports:
+      - 6379:6379
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s

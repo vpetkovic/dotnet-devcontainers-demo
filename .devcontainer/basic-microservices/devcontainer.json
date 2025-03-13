@@ -1,0 +1,41 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+{
+    "name": ".NET (C#) Remote Development - Basic Microservices Setup",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "capAdd": ["SYS_PTRACE"], // This avoids the need to run the entire development environment with root privileges, reducing risk and enhancing security.
+    "init": true, // It acts as the parent process for all the commands executed and files run in the container
+
+    "features": {
+        "ghcr.io/devcontainers/features/powershell:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest"
+        }
+    },
+    
+	"postCreateCommand": "cd ../../src/SampleApp && dotnet restore",
+    "postStartCommand": "dotnet dev-certs https --trust",
+
+    "containerUser": "vscode",
+    "remoteUser": "vscode",
+
+    "customizations": {
+        "jetbrains": {
+            "backend": "Rider", 
+            //"version": "2024.2", // Will use EAP if not specified
+            "plugins" : []
+        },
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csdevkit",
+                "ms-dotnettools.vscode-dotnet-runtime",
+                "ms-dotnettools.csharp",
+                "ms-dotnettools.csdevkit",
+                "ms-azuretools.vscode-docker",
+                "jmrog.vscode-nuget-package-manager",
+            ]
+        }
+    }
+}
