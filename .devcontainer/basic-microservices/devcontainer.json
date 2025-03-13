@@ -3,6 +3,7 @@
     "name": ".NET (C#) Remote Development - Basic Microservices Setup",
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
+    "workspaceFolder": "/workspaces",
     "capAdd": ["SYS_PTRACE"], // This avoids the need to run the entire development environment with root privileges, reducing risk and enhancing security.
     "init": true, // It acts as the parent process for all the commands executed and files run in the container
 
@@ -15,7 +16,7 @@
         }
     },
     
-	"postCreateCommand": "cd ../../src/SampleApp && dotnet restore",
+	"postCreateCommand": "cd ./src/SampleApp && dotnet restore",
     "postStartCommand": "dotnet dev-certs https --trust",
 
     "containerUser": "vscode",
@@ -35,6 +36,7 @@
                 "ms-dotnettools.csdevkit",
                 "ms-azuretools.vscode-docker",
                 "jmrog.vscode-nuget-package-manager",
+                "redis.redis-for-vscode"
             ]
         }
     }

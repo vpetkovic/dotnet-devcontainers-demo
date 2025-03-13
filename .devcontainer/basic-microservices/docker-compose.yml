@@ -6,13 +6,14 @@ services:
   app:
     container_name: app
     image: mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm
-
+    
+    command: sleep infinity
     volumes:
       - ../..:/workspaces:cached
-
-    depends_on:
-      cache:
-        condition: service_healthy
+        
+    networks:
+      - app_network
+        
   webapi:
     image: ghcr.io/vpetkovic/demo-vp-weatherapi:latest
     restart: unless-stopped
@@ -21,6 +22,10 @@ services:
       - 5214:8080
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__WeatherApiDatabase: ""
+    depends_on:
+      cache:
+        condition: service_healthy
     networks:
       - app_network
 
