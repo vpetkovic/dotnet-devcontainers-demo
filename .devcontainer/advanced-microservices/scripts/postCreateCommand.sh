@@ -9,7 +9,7 @@ set -e
 echo "🚀 Setting up development environment..."
 
 # Run initial DB setup
-bash .devcontainer/microservices/mssql/SQLReadiness.sh $SApassword $dacpath $sqlpath
+bash /workspaces/.devcontainer/advanced-microservices/microservices/mssql/SQLReadiness.sh $SApassword $dacpath $sqlpath
 
 # Install .NET workload
 sudo dotnet workload update

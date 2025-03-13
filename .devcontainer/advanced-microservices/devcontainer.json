@@ -1,13 +1,13 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet-mssql
 {
-    "name": ".NET (C#), Node.js (TypeScript) and MS SQL",
+    "name": ".NET (C#), Node.js (TypeScript) and MS SQL Remote Development - Advanced Microservices Setup",
     // Comment out the next 2 lines if you will use the built-in .NET image.
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
     // Un/comment to use built-in .NET image.
     //"image": "mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm", 
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "workspaceFolder": "/workspaces",
     "capAdd": ["SYS_PTRACE"], // This avoids the need to run the entire development environment with root privileges, reducing risk and enhancing security.
     "init": true, // It acts as the parent process for all the commands executed and files run in the container
 
@@ -115,13 +115,13 @@
             "target": "/home/vscode/.dotnet/corefx/cryptography/x509stores"
         }
     ],
-    "onCreateCommand": "bash .devcontainer/scripts/onCreateCommand.sh",
+    "onCreateCommand": "bash /workspaces/.devcontainer/advanced-microservices/scripts/onCreateCommand.sh",
     // postCreateCommand.sh parameters: 
     // $1=SA password, 
     // $2=dacpac path, 
-    // $3=sql script(s) path, 
+    // $3=sql script(s) path
     // $4= source code path (sln or csproj)
-    "postCreateCommand": "bash .devcontainer/scripts/postCreateCommand.sh '${localEnv:MSSQL_SA_PASSWORD}' './bin/Debug' './.devcontainer/microservices/mssql/' './src/SampleApp'",
+    "postCreateCommand": "bash /workspaces/.devcontainer/advanced-microservices/scripts/postCreateCommand.sh '${localEnv:MSSQL_SA_PASSWORD}' './bin/Debug' '/workspaces/.devcontainer/advanced-microservices/microservices/mssql/' './src/SampleApp'",
 
     // This is not supported by Rider but it is supported by VS Code 
     // "hostRequirements": {
