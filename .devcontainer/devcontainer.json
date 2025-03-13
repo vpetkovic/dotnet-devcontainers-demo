@@ -1,6 +1,6 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 {
-    "name": ".NET (C#) Remote Development - Base Setup",
+    "name": ".NET (C#) Remote Development - Basic Setup",
     "image": "mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm", 
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "capAdd": ["SYS_PTRACE"], // This avoids the need to run the entire development environment with root privileges, reducing risk and enhancing security.
