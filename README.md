@@ -6,9 +6,17 @@ This repository is a template for demonstrating the use of development container
 ## Repository Structure
 
 - `.devcontainer/`: Directory containing the configuration for the development container.
-  - `devcontainer.json`: Configuration file for setting up the development container.
-  - `Dockerfile`: Dockerfile used to create the development container.
-  - `docker-compose.yml`: Docker Compose file for orchestrating multiple containers.
+  - `devcontainer.json`: Configuration file for setting up the basic development container.
+  - `basic-microservices`
+    - `Dockerfile`: Dockerfile used to create the development container.
+    - `docker-compose.yml`: Docker Compose file for orchestrating multiple containers. 
+  - `advanced-microservices`
+    - `microservices/mssql` - Used to customize MSSQL server contianer (seeds, sqlcmd tools etc.)
+    - `scripts` - Used to additionally configure the development enviroment
+    - `.env` - storing any secrets (usually not checked in with repo)
+    - `Dockerfile`: Dockerfile used to create the development container.
+    - `docker-compose.yml`: Docker Compose file for orchestrating multiple containers.
+    
 - `src/`: Directory containing the source code of the .NET project.
 
 ### .devcontainer Folder
