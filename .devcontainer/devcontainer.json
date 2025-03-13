@@ -6,7 +6,7 @@
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
     // Un/comment to use built-in .NET image.
-    //"image": "mcr.microsoft.com/dotnet/sdk:8.0", 
+    //"image": "mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm", 
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "capAdd": ["SYS_PTRACE"], // This avoids the need to run the entire development environment with root privileges, reducing risk and enhancing security.
     "init": true, // It acts as the parent process for all the commands executed and files run in the container
@@ -45,7 +45,17 @@
         "jetbrains" : {
             "backend": "Rider", 
             "version": "2024.3",
-            "plugins": []
+            "plugins": [
+                "eu.gillissen.rider.usersecrets",
+                "com.gafner.giv",
+                "Gitflow-Fix",
+                "org.sonarlint.idea",
+                "com.intellij.resharper.StructuredLogging",
+                "PlantUML integration",
+                "com.khmelyuk.multirun",
+                "zielu.gittoolbox",
+                "org.jetbrains.plugins.github"
+            ]
         },
         "vscode": {
             // Set *default* container specific settings.json values on container create.
@@ -56,7 +66,7 @@
                         "database": "",
                         "authenticationType": "SqlLogin",
                         "user": "sa",
-                        "password": "P@ssw0rd123!",
+                        "password": "${localEnv:MSSQL_SA_PASSWORD}",
                         "emptyPasswordInput": false,
                         "savePassword": true,
                         "profileName": "mssql-container"
@@ -105,21 +115,21 @@
             "target": "/home/vscode/.dotnet/corefx/cryptography/x509stores"
         }
     ],
-    "onCreateCommand": {
-        "developmentCerts" : "bash .devcontainer/setup-dotnet-dev-cert.sh",
-        "installAspireTemplates" : "dotnet new install Aspire.ProjectTemplates::9.1.0 --force"
-    },
-    // postCreateCommand.sh parameters: $1=SA password, $2=dacpac path, $3=sql script(s) path
-    "postCreateCommand": {
-        "condigureMsSql" : "bash .devcontainer/microservices/mssql/postCreateCommand.sh 'P@ssw0rd123!' './bin/Debug/' './.devcontainer/microservices/mssql/'",
-        "finalize" : "bash .devcontainer/postCreateFinalize.sh && cd ./src/SampleApp && dotnet restore"
-    },
+    "onCreateCommand": "bash .devcontainer/scripts/onCreateCommand.sh",
+    // postCreateCommand.sh parameters: 
+    // $1=SA password, 
+    // $2=dacpac path, 
+    // $3=sql script(s) path, 
+    // $4= source code path (sln or csproj)
+    "postCreateCommand": "bash .devcontainer/scripts/postCreateCommand.sh '${localEnv:MSSQL_SA_PASSWORD}' './bin/Debug' './.devcontainer/microservices/mssql/' './src/SampleApp'",
+
     // This is not supported by Rider but it is supported by VS Code 
     // "hostRequirements": {
     //     "memory": "8gb",
     //     "cpus": 4
     // },
     "remoteEnv": {
+        "MSSQL_SA_PASSWORD": "${localEnv:MSSQL_SA_PASSWORD}",
         "DOTNET_NO_PACKAGE_FALLBACK": "true",
         "DOTNET_MULTILEVEL_LOOKUP": "0",
         "TARGET": "net8.0"

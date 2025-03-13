@@ -1,6 +1,9 @@
 FROM mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm
 
 ARG USERNAME=vscode
+ARG INSTALL_SQL_TOOLS=true
+ARG INSTALL_DOTNET_TOOLS=true
+ARG INSTALL_NODE=false
 
 # Change ownership of the /home/vscode directory to the vscode user (to avoid permission errors)
 RUN chown -R $USERNAME:$USERNAME /home/$USERNAME \
@@ -9,9 +12,21 @@ RUN chown -R $USERNAME:$USERNAME /home/$USERNAME \
     && apt-get install -y dos2unix
 
 # Install SQL Tools: SQLPackage and sqlcmd
-COPY microservices/mssql/installSQLtools.sh installSQLtools.sh
-RUN bash installSQLtools.sh \
-    && rm ./installSQLtools.sh
+RUN if [ "$INSTALL_SQL_TOOLS" = "true" ]; then \
+    echo "🚀 Installing mssql-tools"; \
+    curl -sSL https://packages.microsoft.com/keys/microsoft.asc | (OUT=$(apt-key add - 2>&1) || echo $OUT); \
+    DISTRO=$(lsb_release -is | tr '[:upper:]' '[:lower:]'); \
+    CODENAME=$(lsb_release -cs); \
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-${DISTRO}-${CODENAME}-prod ${CODENAME} main" > /etc/apt/sources.list.d/microsoft.list; \
+    apt-get update; \
+    ACCEPT_EULA=Y apt-get -y install unixodbc-dev msodbcsql17 libunwind8 mssql-tools; \
+    echo "Installing sqlpackage"; \
+    curl -sSL -o sqlpackage.zip "https://aka.ms/sqlpackage-linux"; \
+    mkdir /opt/sqlpackage; \
+    unzip sqlpackage.zip -d /opt/sqlpackage; \
+    rm sqlpackage.zip; \
+    chmod a+x /opt/sqlpackage/sqlpackage; \
+  fi
     
 # Install required .NET tools globally
 RUN su vscode -c "/usr/share/dotnet/dotnet tool install --ignore-failed-sources --add-source https://api.nuget.org/v3/index.json --global dotnet-ef"
@@ -27,8 +42,11 @@ ENV DOTNET_NO_PACKAGE_FALLBACK=true
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
 # [Optional] - Node.js - Uncomment this line to install global node packages.
-# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && nvm install --lts && nvm use --lts && npm install -g typescript" 2>&1
-# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
+RUN if [ "$INSTALL_NODE" = "true" ]; then \
+    curl -sL https://deb.nodesource.com/setup_18.x | bash -; \
+    apt-get install -y nodejs; \
+    npm install -g typescript eslint eslint-config-prettier eslint-plugin-prettier prettier eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-node eslint-plugin-promise; \
+  fi
 
 # Cleanup
 USER root

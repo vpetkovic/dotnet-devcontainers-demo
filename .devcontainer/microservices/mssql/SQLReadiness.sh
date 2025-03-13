@@ -1,20 +1,24 @@
 #!/bin/bash
+# 1. Waits for SQL Server to be ready.
+# 2. Checks for DACPAC and SQL files in the specified directories.
+# 3. Executes any found SQL files.
+# 4. Deploys any found DACPAC files.
 dacpac="false"
 sqlfiles="false"
 SApassword=$1
 dacpath=$2
 sqlpath=$3
 
-echo "SELECT * FROM SYS.DATABASES" | dd of=testsqlconnection.sql
+echo "SELECT 1" | dd of=testsqlconnection.sql
 for i in {1..60};
 do
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SApassword -d master -i testsqlconnection.sql > /dev/null
+    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd123!' -i testsqlconnection.sql > /dev/null
     if [ $? -eq 0 ]
     then
-        echo "SQL server ready"
+        echo "✅ SQL Server is ready!"
         break
     else
-        echo "Not ready yet..."
+        echo "⏳ Waiting for SQL Server...Not ready yet..."
         sleep 1
     fi
 done
@@ -25,7 +29,7 @@ do
     if [ $f == $dacpath/*".dacpac" ]
     then
         dacpac="true"
-        echo "Found dacpac $f"
+        echo "✅ Found dacpac $f"
     fi
 done
 
@@ -34,7 +38,7 @@ do
     if [ $f == $sqlpath/*".sql" ]
     then
         sqlfiles="true"
-        echo "Found SQL file $f"
+        echo "✅ Found SQL file $f"
     fi
 done
 
@@ -44,7 +48,7 @@ then
     do
         if [ $f == $sqlpath/*".sql" ]
         then
-            echo "Executing $f"
+            echo "🚀 Executing $f"
             /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SApassword -d master -i $f
         fi
     done
@@ -57,7 +61,7 @@ then
         if [ $f == $dacpath/*".dacpac" ]
         then
             dbname=$(basename $f ".dacpac")
-            echo "Deploying dacpac $f"
+            echo "🚀 Deploying dacpac $f"
             /opt/sqlpackage/sqlpackage /Action:Publish /SourceFile:$f /TargetTrustServerCertificate:True /TargetServerName:db /TargetDatabaseName:$dbname /TargetUser:sa /TargetPassword:$SApassword
         fi
     done
