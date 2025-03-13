@@ -21,7 +21,7 @@ This repository is a template for demonstrating the use of development container
 
 ### .devcontainer Folder
 
-The `.devcontainer` folder is highly flexible and can be adjusted to suit various development needs:
+The goal of DevContainers is to provide a fully functional, reproducible development environment along with an IDE. The `.devcontainer` folder is highly flexible and can be adjusted to suit various development needs.
 
 - **Multiple Microservices**: You can include additional microservices within the Docker Compose setup by modifying the `docker-compose.yml` file. This allows for seamless integration and interaction between different services.
 - **Customizing Base Image**: The `Dockerfile` can be customized to change the base image or to use a prebuilt image for the application container. This provides flexibility in choosing the development environment.
