@@ -49,7 +49,16 @@ The `.devcontainer` folder is highly flexible and can be adjusted to suit variou
    code .
    ```
 
-3. When prompted, reopen the repository in the container. Visual Studio Code will use the `devcontainer.json` and `Dockerfile` to build and start the development container.
+3. When prompted, reopen the repository in the container. Visual Studio Code will use the `devcontainer.json` in the `.devcontainer` folder by default to set up basic development enviroment.
+    - Alternatively, press `ctrl` + `shift` + `p` to choose the configuration for .devcontainer.json
+      - Basic Setup (default)
+        - Uses only `devcontainer.json` to define the environment with a pre-built base image, including some basic customizations
+        - *Any required containers, such as Redis used by the Backend API, must be installed through the terminal (docker run -d --name redis-container -p 6379:6379 redis) and endpoints updated to point to localhost*
+      - Basic Microservices Setup
+        - Uses `devcontainer.json` along with docker-compose.yml to orchestrate two additional microservices, with the same basic customizations as the Basic Setup
+      - Advanced Microservices Setup
+        - Uses `devcontainer.json` and `docker-compose.yml` to define the environment with a custom base image using a `Dockerfile`, and orchestrates three additional microservices (including an MSSQL database).
+        - Includes advanced customizations such as running in privileged mode, stricter permissions (including running as a non-root user), additional tools, IDE settings, extensions, etc
 
 ### Remote Development
 
@@ -71,7 +80,7 @@ The `.devcontainer` folder is highly flexible and can be adjusted to suit variou
   ```sh
   docker run -d --name redis-container -p 6379:6379 redis
   ```
-  *Ensure you update the hostnames to localhost for each container you spin up within devcontianer and outside of docker-compose.yml*
+  *Ensure endpoints get updated to point to localhost*
 - **Backend and Frontend Development**: The backend service utilizes Redis and Weather API services that are spun up in containers. The Redis container is used for caching and fast data retrieval, while the Weather API container provides weather data for the application. The frontend service interacts with the backend service to display the weather data and other information retrieved from the backend.
 - **Debugging**: The development container is set up to support debugging of the .NET application within Visual Studio Code. For browser-based development, use third-party debugging extensions for .NET if proprietary Microsoft extensions are not available.
 - **Unit Testing**: The setup includes support for running unit tests within the development container to ensure code quality and correctness.
