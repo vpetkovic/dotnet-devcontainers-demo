@@ -71,6 +71,7 @@ The `.devcontainer` folder is highly flexible and can be adjusted to suit variou
   ```sh
   docker run -d --name redis-container -p 6379:6379 redis
   ```
+  *Ensure you update the hostnames to localhost for each container you spin up within devcontianer and outside of docker-compose.yml*
 - **Backend and Frontend Development**: The backend service utilizes Redis and Weather API services that are spun up in containers. The Redis container is used for caching and fast data retrieval, while the Weather API container provides weather data for the application. The frontend service interacts with the backend service to display the weather data and other information retrieved from the backend.
 - **Debugging**: The development container is set up to support debugging of the .NET application within Visual Studio Code. For browser-based development, use third-party debugging extensions for .NET if proprietary Microsoft extensions are not available.
 - **Unit Testing**: The setup includes support for running unit tests within the development container to ensure code quality and correctness.
