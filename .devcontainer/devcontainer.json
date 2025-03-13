@@ -44,7 +44,7 @@
     "customizations": {
         "jetbrains" : {
             "backend": "Rider", 
-            "version": "2024.3",
+            "version": "2024.2",
             "plugins": [
                 "eu.gillissen.rider.usersecrets",
                 "com.gafner.giv",
