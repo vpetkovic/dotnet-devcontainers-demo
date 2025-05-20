@@ -1,12 +1,16 @@
 FROM mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm
 
 ARG USERNAME=vscode
+ARG USER_UID=1000920000
+ARG USER_GID=$USER_UID
 ARG INSTALL_SQL_TOOLS=true
 ARG INSTALL_DOTNET_TOOLS=true
 ARG INSTALL_NODE=false
 
 # Change ownership of the /home/vscode directory to the vscode user (to avoid permission errors)
-RUN chown -R $USERNAME:$USERNAME /home/$USERNAME \
+RUN groupmod --gid $USER_GID $USERNAME \
+    && usermod --uid $USER_UID --gid $USER_GID $USERNAME \
+    && chown -R $USER_UID:$USER_GID /home/$USERNAME \
     && apt-get update \
     # Ensure all files are converted to LF to avoid issues with CRLF by using dos2unix
     && apt-get install -y dos2unix
