@@ -19,8 +19,9 @@
 	"postCreateCommand": "cd ./src/SampleApp && dotnet restore",
     "postStartCommand": "dotnet dev-certs https --trust",
 
-    "containerUser": "vscode",
-    "remoteUser": "vscode",
+    "updateRemoteUserUID": false,
+    "containerUser": "auto",
+    "remoteUser": "auto",
 
     "customizations": {
         "jetbrains": {

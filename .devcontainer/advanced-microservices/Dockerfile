@@ -1,19 +1,15 @@
 FROM mcr.microsoft.com/devcontainers/dotnet:8.0-bookworm
 
 ARG USERNAME=vscode
-ARG USER_UID=1000920000
-ARG USER_GID=$USER_UID
+
 ARG INSTALL_SQL_TOOLS=true
 ARG INSTALL_DOTNET_TOOLS=true
 ARG INSTALL_NODE=false
 
 # Change ownership of the /home/vscode directory to the vscode user (to avoid permission errors)
-RUN groupmod --gid $USER_GID $USERNAME \
-    && usermod --uid $USER_UID --gid $USER_GID $USERNAME \
-    && chown -R $USER_UID:$USER_GID /home/$USERNAME \
-    && apt-get update \
+RUN apt-get update \
     # Ensure all files are converted to LF to avoid issues with CRLF by using dos2unix
-    && apt-get install -y dos2unix
+    && apt-get install -y dos2unix curl unzip
 
 # Install SQL Tools: SQLPackage and sqlcmd
 RUN if [ "$INSTALL_SQL_TOOLS" = "true" ]; then \
@@ -33,12 +29,16 @@ RUN if [ "$INSTALL_SQL_TOOLS" = "true" ]; then \
   fi
     
 # Install required .NET tools globally
-RUN su vscode -c "/usr/share/dotnet/dotnet tool install --ignore-failed-sources --add-source https://api.nuget.org/v3/index.json --global dotnet-ef"
-RUN su vscode -c "/usr/share/dotnet/dotnet tool install --ignore-failed-sources --add-source https://api.nuget.org/v3/index.json --global dotnet-user-secrets"
-RUN su vscode -c "/usr/share/dotnet/dotnet tool install --ignore-failed-sources --add-source https://api.nuget.org/v3/index.json --global nbgv"
+# RUN su vscode -c "/usr/share/dotnet/dotnet tool install --ignore-failed-sources --add-source https://api.nuget.org/v3/index.json --global dotnet-ef"
+# RUN su vscode -c "/usr/share/dotnet/dotnet tool install --ignore-failed-sources --add-source https://api.nuget.org/v3/index.json --global dotnet-user-secrets"
+# RUN su vscode -c "/usr/share/dotnet/dotnet tool install --ignore-failed-sources --add-source https://api.nuget.org/v3/index.json --global nbgv"
+
+RUN dotnet tool install --global dotnet-ef           --ignore-failed-sources \
+ && dotnet tool install --global dotnet-user-secrets --ignore-failed-sources \
+ && dotnet tool install --global nbgv                --ignore-failed-sources
 
 # Ensure PATH includes the global tools directory
-ENV PATH="$PATH:/root/.dotnet/tools"
+ENV PATH="${PATH}:/home/${USERNAME}/.dotnet/tools"
 ENV DOTNET_NO_PACKAGE_FALLBACK=true
 
 # [Optional] Uncomment this section to install additional OS packages.
@@ -56,4 +56,8 @@ RUN if [ "$INSTALL_NODE" = "true" ]; then \
 USER root
 RUN apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
 
-USER $USERNAME
+# ---- OpenShift entrypoint ------------------------------------------------
+COPY --chmod=755 /advanced-microsevices/scripts/uid_entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["uid_entrypoint.sh"]
+
+# final user will be whatever UID OpenShift assigns
